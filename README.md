@@ -1,10 +1,10 @@
-# osx-mouse
+# osx-mouse-napi
 
 Mouse tracking for macOS. Receive the screen position of mouse events, including while another application is in the foreground. Events are observed only and are not consumed.
 
 Requires **macOS 10.15** or later and **Node.js 16** or later. The native addon is built with [Node-API](https://nodejs.org/api/n-api.html) (`node-addon-api`) and also uses libuv, so `npm install` compiles it for the Node.js version you are running. Xcode command line tools are required.
 
-	npm install osx-mouse
+	npm i osx-mouse-napi
 
 # Usage
 
