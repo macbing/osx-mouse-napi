@@ -1,8 +1,8 @@
 # osx-mouse
 
-Mouse tracking for OS X. Receive the screen position of various mouse events. The events are also emitted while another application is in the foreground.
+Mouse tracking for macOS. Receive the screen position of mouse events, including while another application is in the foreground. Events are observed only and are not consumed.
 
-Versions of this library prior to version 2.0.0 also run with Node.js version 9 and below. Version 2.0.0 and above are context-aware.
+Requires **macOS 10.15** or later and **Node.js 16** or later. The native addon is built with [Node-API](https://nodejs.org/api/n-api.html) (`node-addon-api`) and also uses libuv, so `npm install` compiles it for the Node.js version you are running. Xcode command line tools are required.
 
 	npm install osx-mouse
 
@@ -20,13 +20,15 @@ mouse.on('move', function(x, y) {
 
 The program will not terminate as long as a mouse listener is active. To allow the program to exit, either call `mouse.unref` (works as `unref`/`ref` on a TCP server) or `mouse.destroy()`.
 
-The events emitted are: `move`, `left-down`, `left-up`, `left-drag`, `right-up`, `right-down` and `right-drag`. For each event the screen coordinates are passed to the handler function.
+The events emitted are: `move`, `left-down`, `left-up`, `left-drag`, `right-down`, `right-up`, and `right-drag`. For each event the screen coordinates are passed to the handler function.
 
 # Limitations
 
-From *macOS Mojave* and forward this library requires input capturing permissions which need to be granted manually.
+From *macOS Mojave* and forward, mouse events are only delivered after the process is allowed under **Accessibility** (辅助功能). Input Monitoring is not required.
 
-E.g. in *macOS Catalina* when running from *Terminal*:
+When running from *Terminal*:
 
-1. Open `System Preferences > Security & Privacy > Input Monitoring`
-2. Add *Terminal* to the list
+1. Open `System Settings > Privacy & Security > Accessibility`
+2. Add *Terminal* (or the app that launches Node) to the list and turn it on
+
+On macOS Catalina and earlier, the same list is under `System Preferences > Security & Privacy > Privacy > Accessibility`. Restart the process after changing the permission.

@@ -2,10 +2,8 @@
 #define _MOUSE_H
 
 #include <ApplicationServices/ApplicationServices.h>
-#include <node.h>
-#include <nan.h>
-
-using namespace v8;
+#include <napi.h>
+#include <uv.h>
 
 struct MouseEvent {
 	CGFloat x;
@@ -15,19 +13,21 @@ struct MouseEvent {
 
 const unsigned int BUFFER_SIZE = 10;
 
-class Mouse : public Nan::ObjectWrap {
+class Mouse : public Napi::ObjectWrap<Mouse> {
 	public:
-		static void Initialize(Local<Object> exports, Local<Value> module, Local<Context> context);
-		static Nan::Persistent<Function> constructor;
+		static Napi::Object Init(Napi::Env env, Napi::Object exports);
+		Mouse(const Napi::CallbackInfo& info);
+		~Mouse();
+
 		void Run();
 		void Stop();
 		void HandleEvent(CGEventType type, CGEventRef event);
-		void HandleClose();
 		void HandleSend();
 
 	private:
-		Nan::Callback* event_callback;
-		Nan::AsyncResource* async_resource;
+		Napi::FunctionReference* event_callback;
+		Napi::AsyncContext* async_context;
+		napi_env env_;
 		uv_async_t* async;
 		uv_mutex_t async_lock;
 		uv_thread_t thread;
@@ -38,13 +38,12 @@ class Mouse : public Nan::ObjectWrap {
 		unsigned int readIndex;
 		unsigned int writeIndex;
 
-		explicit Mouse(Nan::Callback*);
-		~Mouse();
+		Napi::Value Destroy(const Napi::CallbackInfo& info);
+		Napi::Value AddRef(const Napi::CallbackInfo& info);
+		Napi::Value RemoveRef(const Napi::CallbackInfo& info);
 
-		static NAN_METHOD(New);
-		static NAN_METHOD(Destroy);
-		static NAN_METHOD(AddRef);
-		static NAN_METHOD(RemoveRef);
+		static void OnSend(uv_async_t* handle);
+		static void OnClose(uv_handle_t* handle);
 };
 
 #endif
